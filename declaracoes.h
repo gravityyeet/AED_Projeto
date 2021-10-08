@@ -14,6 +14,8 @@ typedef struct tabuleiro {
 } tab;
 
 void alloc_tabuleiro();
+void free_tabuleiro(tab *tabuleiro);
 void print_tabuleiro();
+void read_file_info (tab *tabuleiro, char Filename[]);
 
 #endif // DECLARACOES_H_INCLUDED
