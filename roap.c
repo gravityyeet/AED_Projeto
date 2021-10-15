@@ -7,58 +7,6 @@
 
 #include "roap.h"
 
-
-/* void printStrArray(int dim, char** strArray, char* name) {
-    if (name) printf("%s:\n", name);
-    for (int i=0; i<dim; i++) {
-        printf("  %d: \"%s\" \n", i, strArray[i]);
-    }
-    printf("\n");
-} */
-
-
-
-/*void showLab(Labirinto* m) {
-    // sort blocks and treasure for row then col
-    // print blocks, treasure, boundaries
-} */
-
-LabList* newLabList(Labirinto* m) {
-    LabList* newML = calloc(1, sizeof(LabList) );
-    checkAllocationError(newML, "Error allocating labList");
-
-    newML->lab = m;
-    newML->next = NULL;
-
-    return newML;
-}
-
-
-
-LabList* addLab(LabList* head, LabList* ML, Labirinto* m) {
-    ML = newLabList(m);
-    LabList* aux;
-
-    if (head == NULL)
-    {
-        head = ML;
-    }
-    else
-    {
-        aux = head;
-        while (aux-> next != NULL)
-        {
-            aux = aux-> next;
-        }
-    aux-> next = ML;
-    ML-> lab = m;
-    }
-
-    return head;
-}
-
-
-
 void checkAllocationError(const void* ptr, const char* errorMsg) {
     if ( ! ptr ) {
         printf("\n%s\n", errorMsg);
@@ -66,11 +14,45 @@ void checkAllocationError(const void* ptr, const char* errorMsg) {
     }
 }
 
+LabList *criar_No_Lab (FILE *fp) {
+
+    LabList *newnode;
+
+    newnode = (LabList *) malloc(sizeof(LabList));
+    if(newnode == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    newnode->lab = inputLab(fp);
+    newnode->next = NULL;
+
+    return newnode;
+}
+
+LabList *insert_in_list (LabList *head, LabList *innode) {
+
+    LabList *auxA, *auxN;
+
+    if (head == NULL) {
+        head = innode;
+    } else {
+        auxA = head;
+        auxN = head->next;
+        while (auxN != NULL) {
+            auxA = auxN;
+            auxN = auxN->next;
+        }
+        auxA->next = innode;
+    }
+    return head;
+}
+
 
 
 Labirinto* inputLab(FILE* filePtr) {
     char buffer[BUFFERSIZE];
     int lines, cols, celLine, celCol;
+    int parede1 = 0, parede2 = 0, parede_v = 0;
 
     int conversions = fscanf(filePtr, "%d %d %d %d",
         &lines, &cols, &celLine, &celCol);
@@ -112,42 +94,15 @@ Labirinto* inputLab(FILE* filePtr) {
     printf("conversions: %d modo=%d P=%d \n",
                        conversions, m->modo, m->P);
 
+    /* Alloc and read info from file to tabuleiro */
     alloc_tabuleiro(m);
+    for (int t = 0; t < m->P; t++) {
+        fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
+        m->tabuleiro[parede1 - 1][parede2 - 1] = parede_v;
+    }
 
+    fscanf(filePtr, " ");
     return m;
-}
-
-
-
-/* Verifica se isto ta feito corretamente */
-LabList* readLab(FILE* filePtr, LabList *head) {
-
-    LabList* nextLabList = head;
-
-    while( !feof(filePtr) ) {
-        Labirinto* m = inputLab(filePtr);
-        if (m) {
-            addLab(head, nextLabList, m);
-            //showLab(m);
-        }
-    }
-
-    return head;
-}
-
-void freelist(LabList* head)
-{
-    LabList* aux;
-
-    aux = head;
-    while (head != NULL)
-    {
-        aux = head;
-        head = head-> next;
-        free_tabuleiro(aux->lab);
-        free (aux->lab);
-        free (aux);
-    }
 }
 
 /* Alloc e free do tabuleiro 2D sugerido */
@@ -171,6 +126,22 @@ void free_tabuleiro(Labirinto *lab) {
         free(lab->tabuleiro[t]);
     }
     free(lab->tabuleiro);
+}
+
+void free_lista(LabList *head) {
+    LabList *aux;
+
+    aux = head;
+
+    while (head != NULL) {
+        aux = head;
+        head = head->next;
+
+        free_tabuleiro(aux->lab);
+        free(aux->lab);
+        //free(lista->lab->tabuleiro);
+        free(aux);  
+    }
 }
 
 

@@ -22,31 +22,20 @@ typedef struct Labirinto {
 /* Strictly has just one maze, however it also iterates the maze list */
 typedef struct LabList {
     Labirinto* lab;
-    struct Lablist* next;
+    struct LabList* next;
 } LabList;
-
-/* creates a MazeList item ready to be inserted in a list of mazes */
-LabList* newLabList(Labirinto* m);
-
-void freelist(LabList* head);
-
-/* Creates a Maze and inserts it in the list */
-LabList* addLab(LabList* head, LabList* ML, Labirinto* m);
-
-/* Build the maze list from a file */
-LabList* readLab(FILE* filePtr, LabList *head);
 
 /* Get a single Maze from a file */
 Labirinto* inputLab(FILE* filePtr);
-
-//void showLab(Labirinto* m);
-
-//void printStrArray(int dim, char** strArray, char* name);
 
 /* Terminates if allocation failled */
 void checkAllocationError(const void* ptr, const char* errorMsg);
 
 void alloc_tabuleiro(Labirinto *);
 void free_tabuleiro(Labirinto *);
+
+LabList *criar_No_Lab (FILE *);
+LabList *insert_in_list (LabList *, LabList *);
+void free_lista(LabList *);
 
 #endif
