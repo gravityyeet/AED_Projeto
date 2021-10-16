@@ -120,16 +120,16 @@ int A6 (LabList *lista, int teste_l, int teste_c, int control) {
         aux_l = teste_l;
         aux_c = teste_c;
         lista->lab->tabuleiro[teste_l][teste_c] = -3;
-        if (a = A6(lista, teste_l + 1, teste_c, control)) return 1;
+        if ((a = A6(lista, teste_l + 1, teste_c, control))) return 1;
         teste_l = aux_l;
         teste_c = aux_c;
-        if (b = A6(lista, teste_l - 1, teste_c, control)) return 1;
+        if ((b = A6(lista, teste_l - 1, teste_c, control))) return 1;
         teste_l = aux_l;
         teste_c = aux_c;
-        if (c = A6(lista, teste_l, teste_c + 1, control)) return 1;
+        if ((c = A6(lista, teste_l, teste_c + 1, control))) return 1;
         teste_l = aux_l;
         teste_c = aux_c;
-        if (d = A6(lista, teste_l, teste_c - 1, control)) return 1;
+        if ((d = A6(lista, teste_l, teste_c - 1, control))) return 1;
     }
 
     if ( a || b || c || d ) {

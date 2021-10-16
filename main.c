@@ -104,7 +104,6 @@ int main(int argc, char** argv) {
 
     fclose(file_out);
 
-    //free_lista(head);
     free(filename);
     free(extencao);
 

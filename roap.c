@@ -97,7 +97,7 @@ Labirinto* inputLab(FILE* filePtr) {
     /* Alloc and read info from file to tabuleiro */
     alloc_tabuleiro(m);
     for (int t = 0; t < m->P; t++) {
-        fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
+        conversions = fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
         m->tabuleiro[parede1][parede2] = parede_v;
     }
 
@@ -111,7 +111,7 @@ Labirinto* inputLab(FILE* filePtr) {
         m->tabuleiro[t][m->C + 1] = -2;
     }  
 
-    fscanf(filePtr, " ");
+    conversions = fscanf(filePtr, " ");
     return m;
 }
 
@@ -130,7 +130,6 @@ void alloc_tabuleiro(Labirinto *lab) {
 }
 
 void free_tabuleiro(Labirinto *lab) {
-    int linhas = lab->L;
 
     for (int t = 0; t < lab->L + 2; t++) {
         free(lab->tabuleiro[t]);
