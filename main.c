@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv) {
     FILE* filePtr;
-    LabList* head = NULL, *node;
+    LabList* head = NULL, *node, *aux_node;
     int value_out = 0;
     int DEBUG_COUNTER = 0;
 
@@ -78,7 +78,6 @@ int main(int argc, char** argv) {
         switch (node->lab->modo) {
             case 1:
                 value_out = A1(node);
-                print_tabuleiro(node->lab);
                 break;
             case 2:
             case 3:
@@ -89,18 +88,23 @@ int main(int argc, char** argv) {
                 value_out = A5(node);
                 break;
             case 6:
-                //trata do big boss desta fase
+                value_out = A6(node, node->lab->cel_L, node->lab->cel_C, 0);
+                break;
             default:
                 value_out = -10;
                 break;
         }
         fprintf(file_out, "%d\n\n", value_out);
+        aux_node = node;
         node = node->next;
+        free_tabuleiro(aux_node->lab);
+        free(aux_node->lab);
+        free(aux_node);
     }
 
     fclose(file_out);
 
-    free_lista(head);
+    //free_lista(head);
     free(filename);
     free(extencao);
 

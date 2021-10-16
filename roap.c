@@ -70,19 +70,19 @@ Labirinto* inputLab(FILE* filePtr) {
     m->cel_L = celLine;
     m->cel_C = celCol;
 
-    printf("conversions:%d size: %d %d treasure: %d %d \n",
-        conversions, m->L, m->C, m->cel_L, m->cel_C);
+    //printf("conversions:%d size: %d %d treasure: %d %d \n",
+    //    conversions, m->L, m->C, m->cel_L, m->cel_C);
 
     conversions = fscanf(filePtr, "%s", buffer);
 
-    printf("conversions:%d buffer=[%s] \n", conversions, buffer);
+    //printf("conversions:%d buffer=[%s] \n", conversions, buffer);
 
     if (buffer[0]=='A') {
         m->modo = buffer[1]-'0';
         if (m->modo == 6) {
             conversions = fscanf(filePtr, "%d %d", &m->cel_2_L, &m->cel_2_C);
-            printf("conversions:%d same room? %d %d \n",
-                                conversions, m->cel_2_L, m->cel_2_C);
+            //printf("conversions:%d same room? %d %d \n",
+            //                    conversions, m->cel_2_L, m->cel_2_C);
         }
         conversions = fscanf(filePtr, "%d", &m->P);
     } else {
@@ -91,8 +91,8 @@ Labirinto* inputLab(FILE* filePtr) {
         conversions = sscanf(buffer, "%d", &m->P);
     }
 
-    printf("conversions: %d modo=%d P=%d \n",
-                       conversions, m->modo, m->P);
+    //printf("conversions: %d modo=%d P=%d \n",
+    //                   conversions, m->modo, m->P);
 
     /* Alloc and read info from file to tabuleiro */
     alloc_tabuleiro(m);
@@ -104,10 +104,12 @@ Labirinto* inputLab(FILE* filePtr) {
     /* Criacao das bordas do tabuleiro */
     for (int t = 0; t < m->C + 2; t++) {
         m->tabuleiro[0][t] = -2;
-        m->tabuleiro[m->C + 1][t] = -2;
+        m->tabuleiro[m->L + 1][t] = -2;
+    }
+    for (int t = 0; t < m->L + 2; t++) {
         m->tabuleiro[t][0] = -2;
         m->tabuleiro[t][m->C + 1] = -2;
-    }
+    }  
 
     fscanf(filePtr, " ");
     return m;
