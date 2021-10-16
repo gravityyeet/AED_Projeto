@@ -98,7 +98,15 @@ Labirinto* inputLab(FILE* filePtr) {
     alloc_tabuleiro(m);
     for (int t = 0; t < m->P; t++) {
         fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
-        m->tabuleiro[parede1 - 1][parede2 - 1] = parede_v;
+        m->tabuleiro[parede1][parede2] = parede_v;
+    }
+
+    /* Criacao das bordas do tabuleiro */
+    for (int t = 0; t < m->C + 2; t++) {
+        m->tabuleiro[0][t] = -2;
+        m->tabuleiro[m->C + 1][t] = -2;
+        m->tabuleiro[t][0] = -2;
+        m->tabuleiro[t][m->C + 1] = -2;
     }
 
     fscanf(filePtr, " ");
@@ -107,12 +115,12 @@ Labirinto* inputLab(FILE* filePtr) {
 
 /* Alloc e free do tabuleiro 2D sugerido */
 void alloc_tabuleiro(Labirinto *lab) {
-    lab->tabuleiro = (int **) malloc(sizeof(int *) * lab->L);
+    lab->tabuleiro = (int **) calloc(1, sizeof(int *) * (lab->L + 2));
     if (lab->tabuleiro == NULL) {
         exit(EXIT_FAILURE);
     } 
-    for (int alloc_c = 0; alloc_c < lab->L; alloc_c++) {
-        lab->tabuleiro[alloc_c] = (int *) malloc(sizeof(int) * lab->C);
+    for (int alloc_c = 0; alloc_c < lab->L + 2; alloc_c++) {
+        lab->tabuleiro[alloc_c] = (int *) calloc(1, sizeof(int) * (lab->C + 2));
         if (lab->tabuleiro[alloc_c] == NULL) {
             exit(EXIT_FAILURE);
         }
@@ -122,7 +130,7 @@ void alloc_tabuleiro(Labirinto *lab) {
 void free_tabuleiro(Labirinto *lab) {
     int linhas = lab->L;
 
-    for (int t = 0; t < lab->L; t++) {
+    for (int t = 0; t < lab->L + 2; t++) {
         free(lab->tabuleiro[t]);
     }
     free(lab->tabuleiro);
@@ -139,8 +147,16 @@ void free_lista(LabList *head) {
 
         free_tabuleiro(aux->lab);
         free(aux->lab);
-        //free(lista->lab->tabuleiro);
         free(aux);  
+    }
+}
+
+void print_tabuleiro(Labirinto *lab) {
+    for (int i = 0; i < lab->L + 2; i++) {
+        for (int j = 0; j < lab->C + 2; j++) {
+            printf("%d ", lab->tabuleiro[i][j]);
+        }
+        printf("\n");
     }
 }
 

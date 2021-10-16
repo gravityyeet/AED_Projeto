@@ -37,5 +37,6 @@ void free_tabuleiro(Labirinto *);
 LabList *criar_No_Lab (FILE *);
 LabList *insert_in_list (LabList *, LabList *);
 void free_lista(LabList *);
+void print_tabuleiro(Labirinto *);
 
 #endif

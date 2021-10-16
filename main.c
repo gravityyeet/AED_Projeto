@@ -40,13 +40,16 @@ int main(int argc, char** argv) {
     strcpy(extencao, argv[2]);
     aux = strchr(extencao, '.');
     if (aux == NULL) {
+        free(extencao);
         exit(EXIT_FAILURE);
     }
     if (strcmp(aux, ".in1") != 0) {
+        free(extencao);
         exit(EXIT_FAILURE);
     }
     filename = (char *) malloc (strlen(argv[2]) + 2);
     if (filename == NULL) {
+        free(extencao);
         exit(EXIT_FAILURE);
     }
     filename[0] = '\0';
@@ -56,6 +59,8 @@ int main(int argc, char** argv) {
     filePtr = fopen(argv[2], "r");
     if (filePtr == NULL) {
         printf("Erro ao abrir o ficheiro %s !\n", argv[2]);
+        free(extencao);
+        free(filename);
         exit(EXIT_FAILURE);
     }
     
@@ -73,6 +78,7 @@ int main(int argc, char** argv) {
         switch (node->lab->modo) {
             case 1:
                 value_out = A1(node);
+                print_tabuleiro(node->lab);
                 break;
             case 2:
             case 3:
@@ -81,10 +87,11 @@ int main(int argc, char** argv) {
                 break;
             case 5: 
                 value_out = A5(node);
+                break;
             case 6:
                 //trata do big boss desta fase
             default:
-                exit(EXIT_FAILURE);
+                value_out = -10;
                 break;
         }
         fprintf(file_out, "%d\n\n", value_out);
