@@ -6,11 +6,51 @@
 #include <stdlib.h>
 
 #include "roap.h"
+#include "modosA.h"
 
 void checkAllocationError(const void* ptr, const char* errorMsg) {
     if ( ! ptr ) {
-        printf("\n%s\n", errorMsg);
-        exit(EXIT_FAILURE);
+        //printf("\n%s\n", errorMsg);
+        exit(0);
+    }
+}
+
+void result_A (LabList *node, FILE *file_out) {
+    int value_out = -10;
+
+    switch (node->lab->modo) {
+        case 1:
+            value_out = A1(node);
+            break;
+        case 2:
+        case 3:
+        case 4:
+            value_out = A2_4(node, node->lab->modo);
+            break;
+        case 5: 
+            value_out = A5(node);
+            break;
+        case 6:
+            value_out = A6(node, node->lab->cel_L, node->lab->cel_C);
+            break;
+        default:
+            value_out = -10;
+            break;
+    }
+    fprintf(file_out, "%d\n\n", value_out);
+    free_tabuleiro(node->lab);
+    free(node->lab);
+}
+
+void free_lista(LabList *head) {
+    LabList *aux;
+
+    aux = head;
+
+    while (head != NULL) {
+        aux = head;
+        head = head->next;
+        free(aux);  
     }
 }
 
@@ -20,7 +60,7 @@ LabList *criar_No_Lab (FILE *fp) {
 
     newnode = (LabList *) malloc(sizeof(LabList));
     if(newnode == NULL) {
-        exit(EXIT_FAILURE);
+        exit(0);
     }
 
     newnode->lab = inputLab(fp);
@@ -58,7 +98,7 @@ Labirinto* inputLab(FILE* filePtr) {
         &lines, &cols, &celLine, &celCol);
 
     if( conversions != 4 ) {    // EOF
-        printf("\n EOF with conversions=%d \n", conversions);
+        //printf("\n EOF with conversions=%d \n", conversions);
         return NULL;
     }
 
@@ -74,6 +114,9 @@ Labirinto* inputLab(FILE* filePtr) {
     //    conversions, m->L, m->C, m->cel_L, m->cel_C);
 
     conversions = fscanf(filePtr, "%s", buffer);
+    if (conversions != 1) {
+        return NULL;
+    }
 
     //printf("conversions:%d buffer=[%s] \n", conversions, buffer);
 
@@ -83,12 +126,21 @@ Labirinto* inputLab(FILE* filePtr) {
             conversions = fscanf(filePtr, "%d %d", &m->cel_2_L, &m->cel_2_C);
             //printf("conversions:%d same room? %d %d \n",
             //                    conversions, m->cel_2_L, m->cel_2_C);
+            if (conversions != 2) {
+                return NULL;
+            }
         }
         conversions = fscanf(filePtr, "%d", &m->P);
+        if (conversions != 1) {
+            return NULL;
+        }
     } else {
         m->modo = 0;
         buffer[BUFFERSIZE-1] = '\0';
         conversions = sscanf(buffer, "%d", &m->P);
+        if (conversions != 1) {
+            return NULL;
+        }
     }
 
     //printf("conversions: %d modo=%d P=%d \n",
@@ -98,6 +150,9 @@ Labirinto* inputLab(FILE* filePtr) {
     alloc_tabuleiro(m);
     for (int t = 0; t < m->P; t++) {
         conversions = fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
+        if (conversions != 3) {
+            return NULL;
+        }
         m->tabuleiro[parede1][parede2] = parede_v;
     }
 
@@ -119,12 +174,12 @@ Labirinto* inputLab(FILE* filePtr) {
 void alloc_tabuleiro(Labirinto *lab) {
     lab->tabuleiro = (int **) calloc(1, sizeof(int *) * (lab->L + 2));
     if (lab->tabuleiro == NULL) {
-        exit(EXIT_FAILURE);
+        exit(0);
     } 
     for (int alloc_c = 0; alloc_c < lab->L + 2; alloc_c++) {
         lab->tabuleiro[alloc_c] = (int *) calloc(1, sizeof(int) * (lab->C + 2));
         if (lab->tabuleiro[alloc_c] == NULL) {
-            exit(EXIT_FAILURE);
+            exit(0);
         }
     }
 }
@@ -135,30 +190,6 @@ void free_tabuleiro(Labirinto *lab) {
         free(lab->tabuleiro[t]);
     }
     free(lab->tabuleiro);
-}
-
-void free_lista(LabList *head) {
-    LabList *aux;
-
-    aux = head;
-
-    while (head != NULL) {
-        aux = head;
-        head = head->next;
-
-        free_tabuleiro(aux->lab);
-        free(aux->lab);
-        free(aux);  
-    }
-}
-
-void print_tabuleiro(Labirinto *lab) {
-    for (int i = 0; i < lab->L + 2; i++) {
-        for (int j = 0; j < lab->C + 2; j++) {
-            printf("%d ", lab->tabuleiro[i][j]);
-        }
-        printf("\n");
-    }
 }
 
 

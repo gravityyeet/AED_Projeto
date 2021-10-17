@@ -10,16 +10,14 @@
 
 
 int main(int argc, char** argv) {
-    FILE* filePtr;
-    LabList* head = NULL, *node, *aux_node;
-    int value_out = 0;
-    int DEBUG_COUNTER = 0;
+    FILE* filePtr, *file_out;
+    LabList* head = NULL, *node;
 
     //if (DEBUG) printStrArray(argc, argv, "cmdln args");
 
     if (argc != 3) {
-         printf("Numero de argumentos errado! \n");
-        exit(EXIT_FAILURE);
+         //printf("Numero de argumentos errado! \n");
+        exit(0);
     }
 
     char flag[] = "-s";
@@ -27,7 +25,7 @@ int main(int argc, char** argv) {
     if ( strcmp(argv[1]  , flag) != 0 )
     {
         fprintf(stdout, "Flag '-s' necessária para esta fase do projeto!"); //verifica se a flag -s está presente
-        exit(EXIT_FAILURE);
+        exit(0);
     }
 
     char *filename;     // DECLARACAO LA PARA CIMA
@@ -35,22 +33,22 @@ int main(int argc, char** argv) {
 
     extencao = (char *) malloc (strlen(argv[2]) + 1);
     if (extencao == NULL) {
-        exit(EXIT_FAILURE);
+        exit(0);
     }
     strcpy(extencao, argv[2]);
-    aux = strchr(extencao, '.');
+    aux = strrchr(extencao, '.');
     if (aux == NULL) {
         free(extencao);
-        exit(EXIT_FAILURE);
+        exit(0);
     }
     if (strcmp(aux, ".in1") != 0) {
         free(extencao);
-        exit(EXIT_FAILURE);
+        exit(0);
     }
     filename = (char *) malloc (strlen(argv[2]) + 2);
     if (filename == NULL) {
         free(extencao);
-        exit(EXIT_FAILURE);
+        exit(0);
     }
     filename[0] = '\0';
     strcpy(filename, argv[2]);
@@ -58,55 +56,24 @@ int main(int argc, char** argv) {
 
     filePtr = fopen(argv[2], "r");
     if (filePtr == NULL) {
-        printf("Erro ao abrir o ficheiro %s !\n", argv[2]);
+        //printf("Erro ao abrir o ficheiro %s !\n", argv[2]);
         free(extencao);
         free(filename);
-        exit(EXIT_FAILURE);
+        exit(0);
     }
-    
+    file_out = fopen( strcat(filename, ".sol1") , "w");
+
     while (feof(filePtr) == 0) {
         node = criar_No_Lab(filePtr);
         head = insert_in_list(head, node);
-        DEBUG_COUNTER++;        // DEBUG RETIRAR NA VERSAO FINAL
+        result_A(node, file_out);
     }
     fclose(filePtr);
-
-    FILE* file_out = fopen( strcat(filename, ".sol1") , "w");
-
-    node = head;
-    while (node != NULL) {
-        switch (node->lab->modo) {
-            case 1:
-                value_out = A1(node);
-                break;
-            case 2:
-            case 3:
-            case 4:
-                value_out = A2_4(node, node->lab->modo);
-                break;
-            case 5: 
-                value_out = A5(node);
-                break;
-            case 6:
-                value_out = A6(node, node->lab->cel_L, node->lab->cel_C, 0);
-                break;
-            default:
-                value_out = -10;
-                break;
-        }
-        fprintf(file_out, "%d\n\n", value_out);
-        aux_node = node;
-        node = node->next;
-        free_tabuleiro(aux_node->lab);
-        free(aux_node->lab);
-        free(aux_node);
-    }
-
     fclose(file_out);
 
+    free_lista(head);
     free(filename);
     free(extencao);
 
-    return EXIT_SUCCESS;
+    return 0;
 }
-
