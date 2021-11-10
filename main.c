@@ -7,94 +7,99 @@
 
 #include "roap.h"
 #include "modosA.h"
-#include "short.h"
+#include "salas.h"
 
 
 int main(int argc, char** argv) {
     FILE* filePtr, *file_out;
     LabList* head = NULL, *node;
-    char *filename, *input_str;
-    char *extencao, *aux;
-    int fase_proj = 0;      // (fase = 0) == Fase Final; (fase = 1) == Fase Intermedia
+    char *filename, *extensao, *aux;
+    Sala *salas_head = NULL, *salas_node = NULL;
 
-    if (argc < 2) {
+    //if (DEBUG) printStrArray(argc, argv, "cmdln args");
+
+    if (argc != 3) {
          //printf("Numero de argumentos errado! \n");
         exit(0);
     }
 
-    if ( strcmp(argv[1]  , "-s") == 0 )
+    char flag[] = "-s";
+
+    if ( strcmp(argv[1]  , flag) != 0 )
     {
-        fase_proj = 1;
-    }
-
-    if (fase_proj == 0) {
-        input_str = argv[1];
-    } else {
-        input_str = argv[2];
-    }
-
-    extencao = (char *) malloc (strlen(input_str) + 1);
-    if (extencao == NULL) {
         exit(0);
     }
 
-    strcpy(extencao, input_str);
-
-    aux = strrchr(extencao, '.');
+    /* Verificao se a extensao usada no input do ficheiro esta correta */
+    extensao = (char *) malloc (strlen(argv[2]) + 1);
+    if (extensao == NULL) {
+        exit(0);
+    }
+    strcpy(extensao, argv[2]);
+    aux = strrchr(extensao, '.');
     if (aux == NULL) {
-        free(extencao);
+        free(extensao);
+        exit(0);
+    }
+    if (strcmp(aux, ".in1") != 0) {
+        free(extensao);
         exit(0);
     }
 
-    if (fase_proj == 0) {
-        if (strcmp(aux, ".in") != 0) {
-            free(extencao);
-            exit(0);
-        }
-    } else {
-        if (strcmp(aux, ".in1") != 0) {
-            free(extencao);
-            exit(0);
-        }
-    }
-
-    filename = (char *) malloc (strlen(input_str) + 2);
+    /* Junçao de extensao de saida ao nome do ficheiro */
+    filename = (char *) malloc (strlen(argv[2]) + 2);
     if (filename == NULL) {
-        free(extencao);
+        free(extensao);
         exit(0);
     }
     filename[0] = '\0';
-    strcpy(filename, input_str);
+    strcpy(filename, argv[2]);
     strtok(filename, ".");
 
-    filePtr = fopen(input_str, "r");
+    filePtr = fopen(argv[2], "r");
     if (filePtr == NULL) {
-        //printf("Erro ao abrir o ficheiro %s !\n", input_str);
-        free(extencao);
+        //printf("Erro ao abrir o ficheiro %s !\n", argv[2]);
+        free(extensao);
         free(filename);
         exit(0);
     }
 
-    if (fase_proj == 0) {
-        file_out = fopen( strcat(filename, ".sol") , "w");
-        short_path(filePtr);
-        fclose(file_out);
+    file_out = fopen( strcat(filename, ".sol1") , "w");
+
+    /* Enquanto for encontrando informaçao, vai criando labirintos      *
+     *  e colocando o seu resultado, segundo o A definido no ficheiro   *
+     *  num ficheiro file_out                                           */
+    while (feof(filePtr) == 0) {
+        node = criar_No_Lab(filePtr);
+        if (node == NULL) {
+            fprintf(file_out, "%d\n\n", -2);
+            continue;
+        }
+        head = insert_in_list(head, node);
+        print_tabuleiro(node->lab);
+
+        salas_head = analisar_salas(head, 1, 1);
+        // Apontador para a lista de salas
+
+        // Dps cria se aqui uma outra funcao para fazer o resto que precisamos
+
+        result_A(node, file_out);
     }
 
-    if (fase_proj == 1) {
-        file_out = fopen( strcat(filename, ".sol1") , "w");
-        while (feof(filePtr) == 0) {
-            node = criar_No_Lab(filePtr);
-            head = insert_in_list(head, node);
-            result_A(node, file_out);
-        }
-        free_lista(head);
-        fclose(file_out);
+    /* Free e close de tudo */
+    salas_node = salas_head;
+    while (salas_node != NULL) {
+        free_parede(salas_node->paredes_sala);
+
+        salas_node = salas_node->next;
     }
-    
+    free_sala(salas_head);
+
     fclose(filePtr);
+    fclose(file_out);
+    free_lista(head);
     free(filename);
-    free(extencao);
+    free(extensao);
 
     return 0;
 }

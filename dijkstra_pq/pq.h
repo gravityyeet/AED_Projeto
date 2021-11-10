@@ -13,7 +13,7 @@ typedef struct _PQ {
 PQ *PQcreateNode(int);
 PQ *PQinsert (PQ *, PQ *, double *);
 int PQempty (PQ *);
-void PQdec(PQ *, int, double *);
-int PQdelmin(PQ *);
+PQ *PQdec(PQ *, int, double *);
+PQ *PQdelmin(PQ *, int *);
 
 #endif

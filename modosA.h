@@ -13,12 +13,6 @@ A6_coord *criar_No_A6 (int, int);
 A6_coord *inserir_lista_A6 (A6_coord *, A6_coord *);
 A6_coord *remover_lista_A6 (A6_coord *, A6_coord *);
 int procurar_tesouro (A6_coord *, LabList *);
-A6_coord *procura_node (A6_coord *, int l, int c);
-
-
-void print_tabuleiro(Labirinto *);
-
-
 
 int A1 (LabList *);
 int A2_4 (LabList *, int);

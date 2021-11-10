@@ -63,6 +63,7 @@ int A2_4 (LabList *lista, int modo) {
         return -2;
     }
 
+    /* Se alguma coordenada vizinha for branca (=0), retorna 1 */
     if (modo == 2) {
         if (    lista->lab->tabuleiro[coord_l - 1][coord_c] == 0 ||
                 lista->lab->tabuleiro[coord_l + 1][coord_c] == 0 ||
@@ -71,6 +72,7 @@ int A2_4 (LabList *lista, int modo) {
             return 1;
         }
     }
+    /* Se alguma coordenada vizinha for cinzenta (val > 0), retorna 1 */
     if (modo == 3) {
         if (    lista->lab->tabuleiro[coord_l - 1][coord_c] > 0 ||
                 lista->lab->tabuleiro[coord_l + 1][coord_c] > 0 ||
@@ -79,6 +81,7 @@ int A2_4 (LabList *lista, int modo) {
             return 1;
         }
     }
+    /* Se alguma coordenada vizinha for negra (=-1), retorna 1 */
     if (modo == 4) {
         if (    lista->lab->tabuleiro[coord_l - 1][coord_c] == -1 ||
                 lista->lab->tabuleiro[coord_l + 1][coord_c] == -1 ||
@@ -104,15 +107,19 @@ int A6 (LabList *lista, int teste_l, int teste_c) {
         return -2;
     }
 
+    /* Se as coordenadas forem uma parede, nao estao na mesma sala que uma celula branca */
     if (lista->lab->tabuleiro[lista->lab->cel_L][lista->lab->cel_C] != 0 || 
         lista->lab->tabuleiro[lista->lab->cel_2_L][lista->lab->cel_2_C] != 0) {
         return 0;
     }    
 
+    /*  Adiciona-se o primeiro ponto a lista, as coordenadas que queremos saber se  *
+     *  estao na mesma sala que outras                                              */
     node1 = criar_No_A6(lista->lab->cel_L, lista->lab->cel_C);
     head = inserir_lista_A6 (head, node1);
-    lista->lab->tabuleiro[teste_l][teste_c] = -3;
+    lista->lab->tabuleiro[teste_l][teste_c] = -3;   // Para saber que ja foi analisado
     while (1) {
+        /* Ve sempre se ja encontramos a nossa resposta, se for afirmativa, retorna 1 */
         i = procurar_tesouro(head, lista);
         if (i == 1) {
             while (head != NULL) {
@@ -122,7 +129,11 @@ int A6 (LabList *lista, int teste_l, int teste_c) {
             }
             return 1;
         }
+
+        /* Remove o ponto que ja sabemos que nao tem la nada */
         head = remover_lista_A6(head, node1);
+
+        /* Avalia se as vizinhas são brancas, se forem adiciona a lista de pontos */
         if (lista->lab->tabuleiro[teste_l - 1][teste_c] == 0) {
             node = criar_No_A6(teste_l - 1, teste_c);
             head = inserir_lista_A6(head, node);
@@ -143,9 +154,14 @@ int A6 (LabList *lista, int teste_l, int teste_c) {
             head = inserir_lista_A6(head, node);
             lista->lab->tabuleiro[teste_l][teste_c - 1] = -3;
         }
+
+        /*  Se ja nao tivermos pontos por analisar e nao tivermos encontrado    *
+         *  o tesouro entao nao estao na mesma sala                             */
         if (head == NULL) {
             return 0;
         }
+
+        /* Na proxima iteraçao, analisa-se a head da lista */
         node1 = head;
         teste_l = node1->l;
         teste_c = node1->c;
@@ -153,15 +169,7 @@ int A6 (LabList *lista, int teste_l, int teste_c) {
     return -5;
 }
 
-void print_tabuleiro(Labirinto *lab) {
-    for (int i = 0; i < lab->L + 2; i++) {
-        for (int j = 0; j < lab->C + 2; j++) {
-            printf("%d ", lab->tabuleiro[i][j]);
-        }
-        printf("\n");
-    }
-}
-
+/* Verifica se a alguma coordenada da lista, corresponde a coordenada do tesouro */
 int procurar_tesouro (A6_coord *head, LabList *lista) {
     A6_coord *aux;
     
@@ -176,6 +184,7 @@ int procurar_tesouro (A6_coord *head, LabList *lista) {
     return 0;
 }
 
+/* Cria um no da lista de pontos (l,c) */
 A6_coord *criar_No_A6 (int linha, int coluna) {
 
     A6_coord *newnode;
@@ -192,6 +201,8 @@ A6_coord *criar_No_A6 (int linha, int coluna) {
     return newnode;
 }
 
+/*  Insere um no na lista de pontos          *    
+ *  Aqui estao todos os pontos por analisar */
 A6_coord *inserir_lista_A6 (A6_coord *head, A6_coord *node) {
     A6_coord *auxA, *auxN;
 
@@ -209,22 +220,9 @@ A6_coord *inserir_lista_A6 (A6_coord *head, A6_coord *node) {
     return head;
 }
 
-A6_coord *procura_node (A6_coord *head ,int l, int c) {
-    A6_coord *aux;
-
-    aux = head;
-
-    while (aux != NULL) {
-        if (aux->l == l && aux->c == c) {
-            return aux;
-        }
-        aux = aux->next;
-    }
-    return NULL;
-}
-
+/* Remove um ponto da lista de pontos */
 A6_coord *remover_lista_A6 (A6_coord *head, A6_coord *removenode) {
-    A6_coord *aux, *auxn;
+    A6_coord *aux, *auxn = NULL;
 
     aux = head;
 

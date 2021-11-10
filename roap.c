@@ -15,6 +15,8 @@ void checkAllocationError(const void* ptr, const char* errorMsg) {
     }
 }
 
+/*   Chama a funcao para resolver o A correspondente ao labirinto no  *
+ *   ficheiro e da print e free deste                                 */
 void result_A (LabList *node, FILE *file_out) {
     int value_out = -10;
 
@@ -42,6 +44,7 @@ void result_A (LabList *node, FILE *file_out) {
     free(node->lab);
 }
 
+/* Free da lista de labirintos */
 void free_lista(LabList *head) {
     LabList *aux;
 
@@ -54,6 +57,7 @@ void free_lista(LabList *head) {
     }
 }
 
+/* Cria um no para adicionar a lista de labirintos */
 LabList *criar_No_Lab (FILE *fp) {
 
     LabList *newnode;
@@ -64,11 +68,18 @@ LabList *criar_No_Lab (FILE *fp) {
     }
 
     newnode->lab = inputLab(fp);
+    /*  Se as coordenadas a avaliar estiverem fora do tabuleiro *
+     *  da se free e return de NULL                             */
+    if (newnode->lab == NULL) {
+        free(newnode);
+        return NULL;
+    }
     newnode->next = NULL;
 
     return newnode;
 }
 
+/* Insere um no do tipo LabList na lista de labirintos */
 LabList *insert_in_list (LabList *head, LabList *innode) {
 
     LabList *auxA, *auxN;
@@ -88,7 +99,7 @@ LabList *insert_in_list (LabList *head, LabList *innode) {
 }
 
 
-
+/* Le todas as informaçoes de cada labirinto */
 Labirinto* inputLab(FILE* filePtr) {
     char buffer[BUFFERSIZE];
     int lines, cols, celLine, celCol;
@@ -146,7 +157,23 @@ Labirinto* inputLab(FILE* filePtr) {
     //printf("conversions: %d modo=%d P=%d \n",
     //                   conversions, m->modo, m->P);
 
-    /* Alloc and read info from file to tabuleiro */
+    /* Se as coordenadas a avaliar estiverem fora dos limites definidos     *        
+     *  nao vale a pena alocar o labirinto e retorna-se NULL                *
+     *  Tambem le-se ate ao final do labirinto para que na proxima chamada  *
+     *  a funçao esta começe no sitio certo                                 */
+    if ( m->cel_L > m->L || m->cel_C > m->C || m->cel_L < 1 || m->cel_C < 1) {
+        for (int t = 0; t < m->P; t++) {
+            conversions = fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
+            if (conversions != 3) {
+                return NULL;
+            }
+        }
+        conversions = fscanf(filePtr, " ");
+        free (m);
+        return NULL;
+    }
+    /* Alloc do tabuleiro 2D para o labirinto e leitura das paredes para os *
+     *  a tabela 2D                                                         */
     alloc_tabuleiro(m);
     for (int t = 0; t < m->P; t++) {
         conversions = fscanf(filePtr, "%d %d %d", &parede1, &parede2, &parede_v);
@@ -166,11 +193,12 @@ Labirinto* inputLab(FILE* filePtr) {
         m->tabuleiro[t][m->C + 1] = -2;
     }  
 
+    // Para chegar ao fim do ficheiro ou ao inicio do proximo labirinto
     conversions = fscanf(filePtr, " ");
     return m;
 }
 
-/* Alloc e free do tabuleiro 2D sugerido */
+/* Alloc e free do tabuleiro 2D */
 void alloc_tabuleiro(Labirinto *lab) {
     lab->tabuleiro = (int **) calloc(1, sizeof(int *) * (lab->L + 2));
     if (lab->tabuleiro == NULL) {

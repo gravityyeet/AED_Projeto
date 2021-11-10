@@ -21,7 +21,7 @@ PQ *PQinsert (PQ *head, PQ *node, double distancia[]) {
     if (head == NULL) {
         head = node;
     } else {
-        if (distancia[head->V] < distancia[node->V]) {
+        if (distancia[head->V] > distancia[node->V]) {
             node->next = head;
             head = node;
         } else {
@@ -47,43 +47,53 @@ int PQempty (PQ *head) {
     }
 }
 
-void PQdec(PQ *head, int v, double distancia[]) {
+PQ *PQdec(PQ *head, int v, double distancia[]) {
     PQ *aux1, *aux2, *temp;
 
+    // Encontrar o endereço do no a mudar e retira lo da PQ
     aux1 = head;
     aux2 = head->next;
-    while (aux2 != NULL) {
-        if (aux2->V == v) {
-            aux1->next = aux2->next;
-            temp = aux2;        // temp = endereço na PQ do vertice a mudar a sua prioridade
-            break;
-        }
-        aux1 = aux2;
-        aux2 = aux2->next;
-    }
-    // Inserir temp na PQ com a nova distancia
-    if (distancia[head->V] < distancia[temp->V]) {
-        temp->next = head;
-        head = temp;
+    if (head->V == v) {
+        temp = head;
+        head = head->next;
     } else {
-        aux1 = head;
-        aux2 = head->next;
-        while (distancia[temp->V] > distancia[aux1->V] && aux2 != NULL) {
+        while (aux2->V != v) {
             aux1 = aux2;
             aux2 = aux2->next;
         }
-        temp->next = aux2;
-        aux1->next = temp;
+        temp = aux2;
+        aux1->next = aux2->next;
     }
+
+    // Inserir temp na PQ com a nova distancia
+    if (head == NULL) {
+        head = temp;
+    } else {
+        if (distancia[head->V] > distancia[temp->V]) {
+            temp->next = head;
+            head = temp;
+        } else {
+            aux1 = head;
+            aux2 = head->next;
+            while (distancia[temp->V] > distancia[aux1->V] && aux2 != NULL) {
+                aux1 = aux2;
+                aux2 = aux2->next;
+            }
+            temp->next = aux2;
+            aux1->next = temp;
+        }
+    }
+    return head;
 }
 
-int PQdelmin(PQ *head) {
+PQ *PQdelmin(PQ *head, int *v1) {
     PQ *aux;
-    int vret = head->V;
+    
+    *v1 = head->V;
 
     aux = head;
     head = head->next;
     free(aux);
 
-    return vret;
+    return head;
 }
