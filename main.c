@@ -8,7 +8,9 @@
 #include "roap.h"
 #include "modosA.h"
 #include "salas.h"
+#include "salas_adj.h"
 
+#include "pg2.h"
 
 int main(int argc, char** argv) {
     FILE* filePtr, *file_out;
@@ -16,10 +18,9 @@ int main(int argc, char** argv) {
     char *filename, *extensao, *aux;
     Sala *salas_head = NULL, *salas_node = NULL;
 
-    //if (DEBUG) printStrArray(argc, argv, "cmdln args");
+    Graph *graph;
 
     if (argc != 3) {
-         //printf("Numero de argumentos errado! \n");
         exit(0);
     }
 
@@ -66,6 +67,12 @@ int main(int argc, char** argv) {
 
     file_out = fopen( strcat(filename, ".sol1") , "w");
 
+    // Criar grafo
+    graph = (Graph *)malloc(sizeof(Graph));
+    if (graph == NULL){
+        exit(0);
+    }
+
     /* Enquanto for encontrando informaçao, vai criando labirintos      *
      *  e colocando o seu resultado, segundo o A definido no ficheiro   *
      *  num ficheiro file_out                                           */
@@ -82,6 +89,7 @@ int main(int argc, char** argv) {
         // Apontador para a lista de salas
 
         // Dps cria se aqui uma outra funcao para fazer o resto que precisamos
+        graph = criar_grafo_salas(salas_head, graph);
 
         result_A(node, file_out);
     }
