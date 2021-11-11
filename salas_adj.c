@@ -6,16 +6,15 @@
 #include "salas.h"
 
 #include "pg2.h"
-#include "LinkedList.h"
 
 #define inf 999
 
 Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
-    Edge *edge;
-
     Sala *sala_aux, *sala_aux2;
 
     Parede *parede_aresta;
+
+    Listaadj *l_node;
 
     int v_graph = 0;
     int i = 0, j = 0;
@@ -29,12 +28,12 @@ Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
     //printf("::%d\n", v_graph);
 
     /* Allocates vertices array list */
-    graph->adj = (LinkedList **)malloc(graph->V * sizeof(LinkedList *));
+    graph->adj = (Listaadj **)malloc(graph->V * sizeof(Listaadj *));
     if (graph->adj == NULL) {
         exit(0);
     }
     for (i = 0; i < graph->V; i++) {
-        graph->adj[i] = initLinkedList();
+        graph->adj[i] = initListabase();
     }
 
     /*  Aqui ja ta tudo alocado, so é preciso descobrir a parede que    *
@@ -53,16 +52,8 @@ Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
                     //printf("! %d %d !\n", i, j);
                     //printf("### %d %d | %d\n", parede_aresta->l, parede_aresta->c, parede_aresta->v);
 
-                    edge = (Edge *)malloc(sizeof(Edge));
-                    if (edge == NULL) {
-                        exit(0);
-                    }
-
-                    edge->V = j;
-                    edge->W = parede_aresta->v;
-                    edge->l = parede_aresta->l;
-                    edge->c = parede_aresta->c;
-                    graph->adj[i] = insertUnsortedLinkedList(graph->adj[i], (Item)edge);
+                    l_node = novo_no(parede_aresta->l, parede_aresta->c, j, parede_aresta->v);
+                    graph->adj[i] = insertllist(graph->adj[i], l_node);
                 }
             }
             sala_aux2 = sala_aux2->next;

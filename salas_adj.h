@@ -10,7 +10,7 @@
 #include "salas.h"
 
 #include "pg2.h"
-#include "LinkedList.h"
+#include "linked_list.h"
 
 Graph *criar_grafo_salas (Sala *, Graph *);
 Parede *comparar_salas(Sala *, Sala *);

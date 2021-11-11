@@ -7,6 +7,7 @@
 
 #include "pq.h"
 #include "pg2.h"
+#include "linked_list.h"
 
 #define inf 999     // May lead to some problems. Maybe needs to be bigger (See maximum double value)
 

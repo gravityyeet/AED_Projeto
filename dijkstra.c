@@ -8,7 +8,7 @@
 void dijkstra(Graph *G, int start, int vertice_origem[], int distancia[]) {
     int v1, v2;     // (v1, v2)
     double aux;
-    LinkedList *t;
+    Listaadj *t;
     Edge *edge;
     PQ *head = NULL, *node;
 
@@ -26,9 +26,9 @@ void dijkstra(Graph *G, int start, int vertice_origem[], int distancia[]) {
     while (!PQempty(head)) {
         head = PQdelmin(head, &v1);    // Elemento com o custo mais baixo removido e posto o seu vertice em v1
 
-        for (t = G->adj[v1]; t != NULL; t = getNextNodeLinkedList(t)) {  // Analisa-se a lista de adjacencias de v1
+        for (t = G->adj[v1]; t != NULL; t = getNextNodeLList(t)) {  // Analisa-se a lista de adjacencias de v1
             // Relaxaçao do caminho
-            edge = (Edge *)getItemLinkedList(t);
+            edge = getEdgeFromLList(t);
             if (distancia[v2 = edge->V] > distancia[v1] + edge->W) {      // = dist[v1] + custo da aresta
                 aux = distancia[v2];
                 distancia[v2] = distancia[v1] + edge->W;
