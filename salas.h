@@ -14,11 +14,12 @@ typedef struct _Parede {
 typedef struct _Sala {
     int l, c;               // Coords que definem a sala
     Parede *paredes_sala;   // Apontador para a lista com as paredes da sala
+    int dest;               // Sala destino?
     struct _Sala *next;
 } Sala;
 
 void print_tabuleiro(Labirinto *);
-Parede *A6_salas (LabList *, int, int);
+Parede *A6_salas (LabList *, int, int, int *);
 Sala *analisar_salas (LabList *, int, int);
 void ver_paredes_sala (Sala *, LabList *);
 
@@ -28,10 +29,12 @@ Parede *inserir_lista_Parede (Parede *, Parede *);
 int ja_ta_na_lista (Parede *head, int, int);
 int teste_partivel(LabList *, int, int);
 
-Sala *criar_sala (int, int, Parede *);
+Sala *criar_sala (int, int, Parede *, int);
 Sala *inserir_lista_sala (Sala *, Sala *);
 
 void free_parede(Parede *);
 void free_sala(Sala *);
+
+int sala_destino(Sala *);
 
 #endif

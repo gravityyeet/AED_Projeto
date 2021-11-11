@@ -15,7 +15,7 @@ PQ *PQcreateNode(int V) {
 }
 
 // Inserir no na priority queue de forma ordenada por distancia (na head esta a mais pequena)
-PQ *PQinsert (PQ *head, PQ *node, double distancia[]) {
+PQ *PQinsert (PQ *head, PQ *node, int distancia[]) {
     PQ *aux1, *aux2;
 
     if (head == NULL) {
@@ -27,9 +27,13 @@ PQ *PQinsert (PQ *head, PQ *node, double distancia[]) {
         } else {
             aux1 = head;
             aux2 = head->next;
-            while (distancia[node->V] > distancia[aux1->V] && aux2 != NULL) {
-                aux1 = aux2;
-                aux2 = aux2->next;
+            while (aux2 != NULL) {
+                if (distancia[node->V] > distancia[aux2->V]) {
+                    aux1 = aux2;
+                    aux2 = aux2->next;  
+                } else {
+                    break;
+                }
             }
             node->next = aux2;
             aux1->next = node;
@@ -47,7 +51,8 @@ int PQempty (PQ *head) {
     }
 }
 
-PQ *PQdec(PQ *head, int v, double distancia[]) {
+// Atualiza a ordem da PQ
+PQ *PQdec(PQ *head, int v, int distancia[]) {
     PQ *aux1, *aux2, *temp;
 
     // Encontrar o endereço do no a mudar e retira lo da PQ
@@ -68,6 +73,7 @@ PQ *PQdec(PQ *head, int v, double distancia[]) {
     // Inserir temp na PQ com a nova distancia
     if (head == NULL) {
         head = temp;
+        temp->next = NULL;
     } else {
         if (distancia[head->V] > distancia[temp->V]) {
             temp->next = head;
@@ -75,9 +81,13 @@ PQ *PQdec(PQ *head, int v, double distancia[]) {
         } else {
             aux1 = head;
             aux2 = head->next;
-            while (distancia[temp->V] > distancia[aux1->V] && aux2 != NULL) {
-                aux1 = aux2;
-                aux2 = aux2->next;
+            while (aux2 != NULL) {
+                if (distancia[temp->V] > distancia[aux2->V]) {
+                    aux1 = aux2;
+                    aux2 = aux2->next;
+                } else {
+                    break;
+                }
             }
             temp->next = aux2;
             aux1->next = temp;
@@ -86,6 +96,7 @@ PQ *PQdec(PQ *head, int v, double distancia[]) {
     return head;
 }
 
+// Remove a head da PQ
 PQ *PQdelmin(PQ *head, int *v1) {
     PQ *aux;
     

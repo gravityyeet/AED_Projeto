@@ -2,49 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "pq.h"
-#include "pg2.h"
-
-#define inf 999     // May lead to some problems. Maybe needs to be bigger (See maximum double value)
-
-void dijkstra(Graph *, int, int *, double *);
-void print_caminho(int *, double *);
-
-int main(int argc, char** argv) {
-    int st[9];
-    double dist[9];
-    FILE *fpIn, *fpOut;
-    char *input_name = "grafo7.edge";
-    char *output_name = "grafo7.ladj";
-    Graph *graph;
-
-    fpIn = fopen(input_name, "r");
-    if (fpIn == NULL)
-    {
-        exit(2);
-    }
-
-    graph = ReadGraph(fpIn);
-    fclose(fpIn);
-
-    fpOut = fopen(output_name, "w");
-    if (fpOut == NULL)
-    {
-        exit(2);
-    }
-
-    WritesGraph(fpOut, graph);
-
-    dijkstra(graph, 0, st, dist);
-    print_caminho(st, dist);
-
-    fclose(fpOut);
-    FreeGraph(graph);
-    return 1;
-}
+ #include "dijkstra.h"
 
 // Adaptar, mudar o nome das variaveis e rever a estrutura de dados
-void dijkstra(Graph *G, int start, int vertice_origem[], double distancia[]) {
+void dijkstra(Graph *G, int start, int vertice_origem[], int distancia[]) {
     int v1, v2;     // (v1, v2)
     double aux;
     LinkedList *t;
@@ -84,18 +45,43 @@ void dijkstra(Graph *G, int start, int vertice_origem[], double distancia[]) {
     }
 }
 
-void print_caminho(int st[], double dist[]) {
-    int i = 3;
-    int destino = 0;
+void print_caminho(Graph *graph, int st[], int dist[], int i, int destino) {
+    Edge *head_e = NULL, *edge, *aux_e;
+    int n = 0, aux = 0;
 
-    printf("%lf\n", dist[i]);
+    printf("\n%d\n", dist[i]);
+
+    aux = i;
+    while (aux != destino) {
+        aux = st[aux];
+        n++;
+    }
+    printf("%d\n", n);
+
+    // i = sala1 origem
+    // st[i] == sala2 vizinho
 
     if (i != destino) {
-        printf("%d ", i);
+        aux_e = gets_edge(graph, i, st[i]);
+        if (aux_e == NULL) {
+            exit(0);
+        }
+        edge = criar_No_edge(aux_e->l, aux_e->c, aux_e->W);
+        head_e = inserir_lista_edge(head_e, edge);
+        //printf("%d ", i);
         while (st[i] != destino) {
             i = st[i];
-            printf("%d ", i);
+            aux_e = gets_edge(graph, i, st[i]);
+            if (aux_e == NULL) {
+                exit(0);
+            }
+            edge = criar_No_edge(aux_e->l, aux_e->c, aux_e->W);
+            head_e = inserir_lista_edge(head_e, edge);
+            //printf("%d ", i);
         }
     }
-    printf("%d\n", destino);
+    print_edges(head_e);
+    free_edges(head_e);
+    
+    //printf("%d\n", destino);printf("%d %d %d\n", edge->l, edge->c, edge->W);
 }

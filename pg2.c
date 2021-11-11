@@ -84,13 +84,60 @@ Graph *ReadGraph(FILE *fpIn)
   return graph;
 }
 
-void WritesGraph(FILE *fpOut, Graph *graph)
-{
+Edge *gets_edge(Graph *graph, int sala1, int sala_vizinha) {
+  LinkedList *list, *aux;
+  Edge *edge1, *edge2;
+
+  list = graph->adj[sala1];
+  aux = graph->adj[sala_vizinha];
+
+  /* Checks first adjacent vertice */
+  if (list != NULL) {
+    edge1 = (Edge *)getItemLinkedList(list);
+
+    if (aux != NULL) {
+      edge2 = (Edge *)getItemLinkedList(aux);
+      if (edge1->l == edge2->l && edge1->c == edge2->c) {
+        return edge1;
+      }
+    }
+    aux = graph->adj[sala_vizinha];
+    while ((aux = getNextNodeLinkedList(aux)) != NULL) {
+      edge2 = (Edge *)getItemLinkedList(aux);
+      if (edge1->l == edge2->l && edge1->c == edge2->c) {
+        return edge1;
+      }
+    }
+  }
+
+  /* Checks adjacent vertices */
+  aux = graph->adj[sala_vizinha];
+  while ((list = getNextNodeLinkedList(list)) != NULL)
+  {
+    edge1 = (Edge *)getItemLinkedList(list);
+    if (aux != NULL) {
+      edge2 = (Edge *)getItemLinkedList(aux);
+      if (edge1->l == edge2->l && edge1->c == edge2->c) {
+        return edge1;
+      }
+    }
+    aux = graph->adj[sala_vizinha];
+    while ((aux = getNextNodeLinkedList(aux)) != NULL) {
+      edge2 = (Edge *)getItemLinkedList(aux);
+      if (edge1->l == edge2->l && edge1->c == edge2->c) {
+        return edge1;
+      }
+    }
+  }
+  return NULL;
+}
+
+void WritesGraph(Graph *graph) {
   LinkedList *list;
   Edge *edge;
 
   /* Prints number of vertices */
-  fprintf(fpOut, "%d\n", graph->V);
+  printf("%d\n", graph->V);
 
   /* Prints lists of adjacency vertices */
   for (int i = 0; i < graph->V; i++)
@@ -101,19 +148,18 @@ void WritesGraph(FILE *fpOut, Graph *graph)
     if (list != NULL)
     {
       edge = (Edge *)getItemLinkedList(list);
-      fprintf(fpOut, "%d:%d ", edge->V, edge->W);
+      printf("%d:%d ", edge->V, edge->W);
     }
 
     /* Writes adjacent vertices */
     while ((list = getNextNodeLinkedList(list)) != NULL)
     {
       edge = (Edge *)getItemLinkedList(list);
-      fprintf(fpOut, "%d:%d ", edge->V, edge->W);
+      printf("%d:%d ", edge->V, edge->W);
     }
     /* Writes end of list */
-    fprintf(fpOut, "%d\n", (-1));
+    printf("%d\n", (-1));
   }
-
   return;
 }
 
@@ -132,30 +178,51 @@ void FreeGraph(Graph *graph)
   return;
 }
 
-void pg2() {
-  FILE *fpIn, *fpOut;
-  char *input_name = "grafo4.edge";
-  char *output_name = "grafo4.ladj";
+Edge *criar_No_edge (int linha, int coluna, int val) {
 
-  fpIn = fopen(input_name, "r");
-  if (fpIn == NULL)
-  {
-    exit(2);
+    Edge *newnode;
+
+    newnode = (Edge *) calloc(1, sizeof(Edge));
+    if(newnode == NULL) {
+        exit(0);
+    }
+
+    newnode->l = linha;
+    newnode->c = coluna;
+    newnode->W = val; 
+
+    return newnode;
+}
+
+Edge *inserir_lista_edge (Edge *head, Edge *node) {
+
+  if (head == NULL) {
+    head = node;
+  } else {
+    node->next = head;
+    head = node;
   }
 
-  Graph *graph = ReadGraph(fpIn);
+  return head;
+}
 
-  fclose(fpIn);
+void print_edges (Edge *head) {
+  Edge *node;
 
-  fpOut = fopen(output_name, "w");
-  if (fpOut == NULL)
-  {
-    exit(2);
+  node = head;
+  while (node != NULL) {
+    printf ("%d %d %d\n", node->l, node->c, node->W);
+    node = node->next;
   }
+}
 
-  WritesGraph(fpOut, graph);
+void free_edges(Edge *h) {
+  Edge *aux;
 
-  fclose(fpOut);
-
-  FreeGraph(graph);
+  aux = h;
+  while (h != NULL) {
+    aux = h;
+    h = h->next;
+    free(aux);
+  }
 }

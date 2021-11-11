@@ -18,7 +18,7 @@ Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
     Parede *parede_aresta;
 
     int v_graph = 0;
-    int i = 0;
+    int i = 0, j = 0;
 
     sala_aux = salas_head;
     while (sala_aux != NULL) {
@@ -26,7 +26,7 @@ Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
         sala_aux = sala_aux->next;
     }
     graph->V = v_graph;
-    printf("::%d\n", v_graph);
+    //printf("::%d\n", v_graph);
 
     /* Allocates vertices array list */
     graph->adj = (LinkedList **)malloc(graph->V * sizeof(LinkedList *));
@@ -41,22 +41,34 @@ Graph *criar_grafo_salas (Sala *salas_head, Graph *graph) {
      *  corresponde a aresta entre 2 salas                              */
 
     sala_aux = salas_head;
-    while (sala_aux != NULL) {
+    for (i = 0; sala_aux != NULL; i++) {
         sala_aux2 = salas_head;
-        while (sala_aux2 != NULL) {
+        for (j = 0; sala_aux2 != NULL; j++) {
             if (sala_aux != sala_aux2) {
-                parede_aresta = comparar_salas(sala_aux, sala_aux2);
+                parede_aresta = comparar_salas(sala_aux, sala_aux2);    // Vai se obter a aresta entre 2 salas
                 if (parede_aresta == NULL) {
-                    free(parede_aresta);
+                    //free(parede_aresta);
                 } else {
-                    //printf("\\\%d %d | %d\n", parede_aresta->l, parede_aresta->c, parede_aresta->v);
+                    // Criar aresta entre salas
+                    //printf("! %d %d !\n", i, j);
+                    //printf("### %d %d | %d\n", parede_aresta->l, parede_aresta->c, parede_aresta->v);
+
+                    edge = (Edge *)malloc(sizeof(Edge));
+                    if (edge == NULL) {
+                        exit(0);
+                    }
+
+                    edge->V = j;
+                    edge->W = parede_aresta->v;
+                    edge->l = parede_aresta->l;
+                    edge->c = parede_aresta->c;
+                    graph->adj[i] = insertUnsortedLinkedList(graph->adj[i], (Item)edge);
                 }
             }
             sala_aux2 = sala_aux2->next;
         }
         sala_aux = sala_aux->next;
     }
-
     return graph;
 }
 
@@ -87,9 +99,12 @@ Parede *comparar_salas(Sala *sala1, Sala *sala2) {
 
     if (p_min->v == inf) {   // Caso nao haja ligacao entre as salas
         p_min = NULL;
+        free(p_min);
     } else {
         //printf("%d %d : %d %d\n", sala1->l, sala1->c, sala2->l, sala2->c);
     }
 
     return p_min;   // Parede mais pequena comum a 2 salas
 }
+
+

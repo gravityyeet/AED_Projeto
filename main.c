@@ -9,6 +9,7 @@
 #include "modosA.h"
 #include "salas.h"
 #include "salas_adj.h"
+#include "dijkstra.h"
 
 #include "pg2.h"
 
@@ -16,9 +17,11 @@ int main(int argc, char** argv) {
     FILE* filePtr, *file_out;
     LabList* head = NULL, *node;
     char *filename, *extensao, *aux;
-    Sala *salas_head = NULL, *salas_node = NULL;
+    Sala *salas_head = NULL;
 
     Graph *graph;
+    int *st;
+    int *dist;
 
     if (argc != 3) {
         exit(0);
@@ -91,17 +94,29 @@ int main(int argc, char** argv) {
         // Dps cria se aqui uma outra funcao para fazer o resto que precisamos
         graph = criar_grafo_salas(salas_head, graph);
 
+        st = (int *) malloc (sizeof(int) * graph->V);
+        if (st == NULL) {
+            exit(0);
+        }
+
+        dist = (int *) malloc (sizeof(int) * graph->V);
+        if (dist == NULL) {
+            exit(0);
+        }
+        
+        //WritesGraph(graph);
+
+        dijkstra(graph, 0, st, dist);
+        print_caminho(graph, st, dist, 4, 0);
+
         result_A(node, file_out);
     }
 
-    /* Free e close de tudo */
-    salas_node = salas_head;
-    while (salas_node != NULL) {
-        free_parede(salas_node->paredes_sala);
-
-        salas_node = salas_node->next;
-    }
     free_sala(salas_head);
+
+    free(st);
+    free(dist);
+    FreeGraph(graph);
 
     fclose(filePtr);
     fclose(file_out);

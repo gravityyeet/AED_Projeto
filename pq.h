@@ -1,5 +1,5 @@
-#ifndef DECLARACOES_H_INCLUDED
-#define DECLARACOES_H_INCLUDED
+#ifndef pqHeader
+#define pqHeader
 
 #include <stdio.h>
 #include <string.h>
@@ -11,9 +11,9 @@ typedef struct _PQ {
 } PQ;
 
 PQ *PQcreateNode(int);
-PQ *PQinsert (PQ *, PQ *, double *);
+PQ *PQinsert (PQ *, PQ *, int *);
 int PQempty (PQ *);
-PQ *PQdec(PQ *, int, double *);
+PQ *PQdec(PQ *, int, int *);
 PQ *PQdelmin(PQ *, int *);
 
 #endif
