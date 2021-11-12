@@ -34,9 +34,10 @@ Sala *analisar_salas (LabList *lista, int l, int c, int fase_proj) {
 
     ver_paredes_sala(head, lista, fase_proj);
 
-    //node = head;
-    //p_node = head->paredes_sala;
-    /*while (node != NULL) {
+    /*
+    node = head;
+    p_node = head->paredes_sala;
+    while (node != NULL) {
         printf("\nCoords Sala: %d %d\n", node->l, node->c);
         print_paredes(node->paredes_sala);
 

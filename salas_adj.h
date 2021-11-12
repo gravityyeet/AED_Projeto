@@ -12,7 +12,11 @@
 #include "pg2.h"
 #include "linked_list.h"
 
-Graph *criar_grafo_salas (Sala *, Graph *);
-Parede *comparar_salas(Sala *, Sala *);
+Graph *criar_grafo_salas (LabList *, Sala *, Graph *);
+
+int ligacao_possivel_salas(LabList *, Sala *, Sala *, Parede *);
+int A6_modded (LabList *, int, int, Sala *);
+void reset_tab(Labirinto *);
+int procurar_coord (A6_coord *, int, int);
 
 #endif

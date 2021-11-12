@@ -45,18 +45,21 @@ void dijkstra(Graph *G, int start, int vertice_origem[], int distancia[]) {
     }
 }
 
-void print_caminho(Graph *graph, int st[], int dist[], int i, int destino) {
+void print_caminho(Graph *graph, int st[], int dist[], int i, int destino, FILE *fp) {
     Edge *head_e = NULL, *edge, *aux_e;
     int n = 0, aux = 0;
 
-    printf("\n%d\n", dist[i]);
+    fprintf(fp, "%d\n", dist[i]);
+    if (dist[i] == 0) {
+        return;
+    }
 
     aux = i;
     while (aux != destino) {
         aux = st[aux];
         n++;
     }
-    printf("%d\n", n);
+    fprintf(fp, "%d\n", n);
 
     // i = sala1 origem
     // st[i] == sala2 vizinho
@@ -70,7 +73,7 @@ void print_caminho(Graph *graph, int st[], int dist[], int i, int destino) {
         edge = criar_No_edge(aux_e->l, aux_e->c, aux_e->W);
         head_e = inserir_lista_edge(head_e, edge);
         //printf("%d ", i);
-        
+
         while (st[i] != destino) {
             i = st[i];
 
@@ -83,7 +86,7 @@ void print_caminho(Graph *graph, int st[], int dist[], int i, int destino) {
             //printf("%d ", i);
         }
     }
-    print_edges(head_e);
+    print_edges(head_e, fp);
     free_edges(head_e);
     
     //printf("%d\n", destino);printf("%d %d %d\n", edge->l, edge->c, edge->W);
